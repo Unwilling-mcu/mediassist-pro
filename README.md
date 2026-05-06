@@ -1,9 +1,11 @@
 # 🏥 MediAssist Pro
 
-**AI-powered medical companion app** — Symptom checker, real nearby hospitals, doctor booking, live chat, prescriptions, health analytics, and wearables integration.
+**AI-powered medical companion app** — Symptom checker, real nearby hospitals, doctor booking, live chat, prescriptions, health analytics, and wearables integration. Built mobile-first, works seamlessly on phones and desktop.
 
 [![Live Demo](https://img.shields.io/badge/Live-mediassist--pro.vercel.app-00D4A8?style=flat-square)](https://mediassist-pro.vercel.app)
 [![GitHub](https://img.shields.io/badge/GitHub-Unwilling--mcu/mediassist--pro-181717?style=flat-square&logo=github)](https://github.com/Unwilling-mcu/mediassist-pro)
+[![PWA Ready](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=flat-square)](https://mediassist-pro.vercel.app)
+[![Mobile First](https://img.shields.io/badge/Mobile-First-00D4A8?style=flat-square)]()
 
 ---
 
@@ -23,6 +25,28 @@
 | 👤 **Patient Profile** | BMI auto-calc, blood group, allergies, emergency contacts |
 | 📱 **PWA** | Install as mobile/desktop app — works offline |
 | 🎨 **Themes** | Dark / Light / System auto-detect |
+
+---
+
+## 📱 Mobile Experience
+
+MediAssist Pro is built **mobile-first** — the interface adapts completely between phone and desktop.
+
+### On Mobile (< 768px)
+- **Bottom tab bar** with 5 primary navigation tabs (Home, Symptoms, AI Chat, Reminders, More)
+- **"More" slide-up drawer** for all remaining pages — smooth sheet animation, 2-column grid layout
+- **Compact 56px topbar** — icon-only search that expands into a full-width bar, full-width notification panel
+- **AI Chat** — native messaging feel: pill-shaped input, asymmetric chat bubbles, horizontal-scrolling suggestion chips, no sidebar clutter
+- **Dashboard** — 2-column vital card grid, touch-friendly medication checkboxes (32px targets), sections reordered for thumb reach
+- **iOS safe area** support — notch and home bar aware via `env(safe-area-inset-*)`
+- **No iOS zoom** on input focus (font-size 16px enforced)
+- **44px minimum tap targets** on all interactive elements
+
+### On Desktop (≥ 768px)
+- Full collapsible sidebar with all 13 navigation items
+- Wide topbar with inline search bar
+- Multi-column dashboard layout
+- AI Chat with conversation history sidebar panel
 
 ---
 
@@ -95,7 +119,7 @@ Open **http://localhost:5173** → Register → You're in! ✅
 ### Backend → Railway
 1. https://railway.app → New Project → Deploy from GitHub
 2. Root directory: `server`
-3. Add environment variables (same as .env above + `NODE_ENV=production`)
+3. Add environment variables (same as `.env` above + `NODE_ENV=production`)
 4. Generate domain → copy URL
 
 ### Frontend → Vercel
@@ -106,13 +130,15 @@ Open **http://localhost:5173** → Register → You're in! ✅
 
 ---
 
-## 📱 Install as App
+## 📱 Install as App (PWA)
 
-**Android (Chrome):** Open app URL → 3 dots → Add to Home Screen
+**Android (Chrome):** Open app URL → 3 dots menu → Add to Home Screen
 
-**iPhone (Safari):** Open URL → Share → Add to Home Screen
+**iPhone (Safari):** Open URL → Share icon → Add to Home Screen
 
 **Desktop:** Open URL → Install icon in address bar
+
+Once installed, the app runs fullscreen with the native bottom tab bar and no browser chrome.
 
 ---
 
@@ -127,15 +153,15 @@ mediassist-pro/
 │   │   └── icons/             # PWA icons (72–512px)
 │   └── src/
 │       ├── api/               # Axios API layer
-│       ├── components/        # All page components
+│       ├── components/
 │       │   ├── Analytics/     # Health charts (Recharts)
 │       │   ├── Appointments/  # Appointment management
 │       │   ├── Auth/          # Login / Register
 │       │   ├── Booking/       # Doctor booking
-│       │   ├── Chat/          # AI Assistant
-│       │   ├── Dashboard/     # Home with mini charts
+│       │   ├── Chat/          # AI Assistant (mobile + desktop layouts)
+│       │   ├── Dashboard/     # Home with mini charts (responsive)
 │       │   ├── DoctorChat/    # Live Socket.io chat
-│       │   ├── Layout/        # Sidebar, Topbar
+│       │   ├── Layout/        # Sidebar, Topbar, MobileNav ← mobile nav lives here
 │       │   ├── Nearby/        # GPS-based map
 │       │   ├── Prescriptions/ # Medication tracker
 │       │   ├── Profile/       # Patient profile + BMI
@@ -143,7 +169,12 @@ mediassist-pro/
 │       │   ├── Settings/      # Theme + preferences
 │       │   ├── Symptom/       # AI symptom checker
 │       │   └── Wearables/     # Bluetooth devices
-│       ├── hooks/             # useLiveVitals, usePWA, useSocket, useReminders
+│       ├── hooks/
+│       │   ├── useIsMobile.js    # 768px breakpoint detection (reactive)
+│       │   ├── useLiveVitals.js  # Wearable vitals simulation
+│       │   ├── usePWA.js         # Install prompt + online status
+│       │   ├── useReminders.js   # Notification scheduling
+│       │   └── useSocket.js      # Socket.io connection
 │       ├── services/          # pdfService, notificationService
 │       └── store/             # Zustand global state
 └── server/                    # Node.js + Express backend
@@ -188,7 +219,7 @@ mediassist-pro/
 
 ## 📸 Screenshots
 
-> Dashboard · Symptom Checker · Nearby Map · Doctor Chat · Analytics
+> Dashboard · Symptom Checker · Nearby Map · Doctor Chat · Analytics · Mobile Bottom Nav
 
 ---
 
