@@ -2,7 +2,7 @@
 
 **AI-powered medical companion app** — Symptom checker, real nearby hospitals, doctor booking, live chat, prescriptions, health analytics, and wearables integration. Built mobile-first, works seamlessly on phones and desktop.
 
-[![Live Demo](https://img.shields.io/badge/Live-mediassist--pro.vercel.app-00D4A8?style=flat-square)](https://mediassist-pro.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live-mediassist--pro.vercel.app-00D4A8?style=flat-square)](https://mediassist-pro-lemon.vercel.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-Unwilling--mcu/mediassist--pro-181717?style=flat-square&logo=github)](https://github.com/Unwilling-mcu/mediassist-pro)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=flat-square)](https://mediassist-pro.vercel.app)
 [![Mobile First](https://img.shields.io/badge/Mobile-First-00D4A8?style=flat-square)]()
