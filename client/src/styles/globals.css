@@ -198,3 +198,34 @@ select.input option { background: var(--bg3); }
 @keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.4);opacity:.5;} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
 .fade-up { animation: fadeUp .28s ease; }
+
+/* ═══ MOBILE OVERRIDES ═══ */
+@media (max-width: 767px) {
+  /* Prevent iOS zoom on input focus */
+  input, textarea, select { font-size: 16px !important; }
+
+  /* Bigger tap targets */
+  .btn { padding: 12px 20px; min-height: 44px; }
+  .btn-primary, .btn-ghost, .btn-danger { border-radius: 12px; }
+
+  /* Card padding tighter on mobile */
+  .card { padding: 14px; border-radius: 14px; }
+
+  /* Page heading smaller */
+  .page-heading h1 { font-size: 20px; }
+  .page-heading p  { font-size: 12px; }
+
+  /* Inputs larger touch target */
+  .input { padding: 13px 14px; border-radius: 10px; }
+
+  /* Prevent horizontal overflow */
+  body { overflow-x: hidden; }
+
+  /* Make section titles slightly smaller */
+  .section-title { font-size: 13px; margin-bottom: 10px; }
+}
+
+/* ═══ SAFE AREA / NOTCH ═══ */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body { padding-bottom: env(safe-area-inset-bottom); }
+}

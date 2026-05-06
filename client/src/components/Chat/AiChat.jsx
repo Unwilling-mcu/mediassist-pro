@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { aiAPI } from '../../api';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 const SUGGESTIONS = [
   'What are the side effects of Metformin?',
@@ -31,6 +32,7 @@ function formatMessage(text) {
 }
 
 export default function AiChat() {
+  const isMobile = useIsMobile();
   const [messages, setMessages] = useState([{
     role:'assistant',
     content:"Hello! I'm MediAssist AI, powered by Claude.\n\nI can help you with:\n- Understanding your symptoms\n- Medication questions and interactions\n- Interpreting your health vitals\n- Preparing for doctor visits\n\nWhat would you like to know today?",
@@ -61,13 +63,103 @@ export default function AiChat() {
     } finally { setLoading(false); }
   };
 
+  const newChat = () => {
+    setMessages([{ role:'assistant', content:'New conversation! How can I help you today?' }]);
+    setError('');
+  };
+
+  /* ── MOBILE LAYOUT ── */
+  if (isMobile) {
+    return (
+      <div style={{ display:'flex', flexDirection:'column', height:'calc(100vh - 56px - 64px - env(safe-area-inset-bottom))', background:'var(--card)', border:'1px solid var(--border)', borderRadius:'var(--r)', overflow:'hidden' }}>
+
+        {/* Header */}
+        <div style={{ padding:'12px 14px', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
+          <div style={{ width:34, height:34, borderRadius:9, background:'linear-gradient(135deg,var(--mint),var(--blue))', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, flexShrink:0 }}>✚</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:14, fontWeight:600 }}>MediAssist AI</div>
+            <div style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'var(--text2)' }}>
+              <div style={{ width:6, height:6, borderRadius:'50%', background:'var(--mint)', animation:'pulse 2s infinite' }} />
+              Powered by Claude
+            </div>
+          </div>
+          <button onClick={newChat} style={{ padding:'7px 13px', borderRadius:20, background:'var(--mintd)', border:'1px solid rgba(0,212,168,.25)', color:'var(--mint)', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--sans)' }}>
+            + New
+          </button>
+        </div>
+
+        {/* Messages */}
+        <div style={{ flex:1, overflowY:'auto', padding:'14px 12px', display:'flex', flexDirection:'column', gap:12 }}>
+          {messages.map((m,i) => (
+            <div key={i} style={{ display:'flex', gap:8, maxWidth:'88%', alignSelf:m.role==='user'?'flex-end':'flex-start', flexDirection:m.role==='user'?'row-reverse':'row' }}>
+              <div style={{ width:30, height:30, borderRadius:9, flexShrink:0, background:m.role==='user'?'linear-gradient(135deg,var(--blue),var(--purple))':'linear-gradient(135deg,var(--mint),var(--blue))', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, color:'#fff' }}>
+                {m.role==='user'?'👤':'✚'}
+              </div>
+              <div style={{ background:m.role==='user'?'var(--mintd)':'var(--bg3)', border:`1px solid ${m.role==='user'?'rgba(0,212,168,.25)':'var(--border)'}`, borderRadius:m.role==='user'?'16px 4px 16px 16px':'4px 16px 16px 16px', padding:'10px 14px', fontSize:13, lineHeight:1.7 }}>
+                {formatMessage(m.content)}
+              </div>
+            </div>
+          ))}
+          {loading && (
+            <div style={{ display:'flex', gap:8, maxWidth:'88%' }}>
+              <div style={{ width:30, height:30, borderRadius:9, background:'linear-gradient(135deg,var(--mint),var(--blue))', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', flexShrink:0 }}>✚</div>
+              <div style={{ background:'var(--bg3)', border:'1px solid var(--border)', borderRadius:'4px 16px 16px 16px', padding:'12px 16px', display:'flex', gap:5, alignItems:'center' }}>
+                {[0,1,2].map(i=><span key={i} style={{ width:7, height:7, background:'var(--mint)', borderRadius:'50%', display:'block', animation:`bounce 1.2s infinite ${i*0.2}s` }}/>)}
+              </div>
+            </div>
+          )}
+          <div ref={bottomRef}/>
+        </div>
+
+        {/* Suggestions */}
+        <div style={{ padding:'8px 12px', borderTop:'1px solid var(--border)', display:'flex', gap:7, overflowX:'auto', flexShrink:0 }}>
+          {SUGGESTIONS.map(s=>(
+            <button key={s} onClick={()=>!loading&&send(s)} style={{ background:'var(--bg2)', border:'1px solid var(--border)', borderRadius:100, padding:'6px 13px', fontSize:11, cursor:'pointer', color:'var(--text2)', whiteSpace:'nowrap', fontFamily:'var(--sans)', flexShrink:0 }}>
+              {s}
+            </button>
+          ))}
+        </div>
+
+        {/* Disclaimer */}
+        <div style={{ fontSize:10, color:'var(--text3)', padding:'4px 14px', flexShrink:0, textAlign:'center' }}>
+          ℹ️ For informational purposes only. Consult a licensed doctor for medical decisions.
+        </div>
+
+        {/* Input */}
+        <div style={{ padding:'10px 12px 12px', borderTop:'1px solid var(--border)', flexShrink:0 }}>
+          {error && (
+            <div style={{ background:'rgba(255,107,107,.1)', border:'1px solid rgba(255,107,107,.2)', borderRadius:8, padding:'7px 12px', color:'var(--coral)', fontSize:11, marginBottom:8 }}>
+              ⚠️ Server not reachable. Run: <code>cd server && npm run dev</code>
+            </div>
+          )}
+          <div style={{ display:'flex', alignItems:'flex-end', gap:8, background:'var(--bg3)', border:'1px solid var(--border)', borderRadius:20, padding:'10px 12px' }}>
+            <textarea
+              ref={textareaRef} value={input} onChange={e=>setInput(e.target.value)}
+              onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}}
+              onInput={e=>{e.target.style.height='';e.target.style.height=Math.min(e.target.scrollHeight,100)+'px';}}
+              placeholder="Ask about symptoms, medications..."
+              rows={1}
+              style={{ flex:1, background:'none', border:'none', outline:'none', color:'var(--text)', fontSize:14, fontFamily:'var(--sans)', resize:'none', lineHeight:1.5, maxHeight:100 }}
+            />
+            <button onClick={()=>send()} disabled={loading||!input.trim()}
+              style={{ width:38, height:38, borderRadius:'50%', background:input.trim()&&!loading?'var(--mint)':'var(--bg3)', border:'none', cursor:input.trim()&&!loading?'pointer':'not-allowed', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, opacity:input.trim()&&!loading?1:.4, fontSize:16 }}>
+              ➤
+            </button>
+          </div>
+        </div>
+
+        <style>{`@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}`}</style>
+      </div>
+    );
+  }
+
+  /* ── DESKTOP LAYOUT (unchanged) ── */
   return (
     <div style={{ height:'calc(100vh - 112px)', display:'grid', gridTemplateColumns:'250px 1fr', background:'var(--card)', border:'1px solid var(--border)', borderRadius:'var(--r)', overflow:'hidden' }}>
       <div style={{ borderRight:'1px solid var(--border)', display:'flex', flexDirection:'column' }}>
         <div style={{ padding:18, borderBottom:'1px solid var(--border)' }}>
           <div style={{ fontSize:14, fontWeight:600, marginBottom:10 }}>Conversations</div>
-          <button className="btn btn-primary" style={{ width:'100%', justifyContent:'center', fontSize:13 }}
-            onClick={() => { setMessages([{ role:'assistant', content:'New conversation! How can I help you today?' }]); setError(''); }}>
+          <button className="btn btn-primary" style={{ width:'100%', justifyContent:'center', fontSize:13 }} onClick={newChat}>
             + New Chat
           </button>
         </div>

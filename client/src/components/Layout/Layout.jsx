@@ -4,8 +4,10 @@ import useStore from '../../store/useStore';
 import { patientAPI } from '../../api';
 import { useLiveVitals } from '../../hooks/useLiveVitals';
 import { usePWA } from '../../hooks/usePWA';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import MobileNav from './MobileNav';
 import Dashboard from '../Dashboard/Dashboard';
 import SymptomChecker from '../Symptom/SymptomChecker';
 import NearbyMap from '../Nearby/NearbyMap';
@@ -23,6 +25,7 @@ import Settings from '../Settings/Settings';
 export default function Layout() {
   const setPatient = useStore((s) => s.setPatient);
   const { isOnline, canInstall, install } = usePWA();
+  const isMobile = useIsMobile();
   useLiveVitals(true);
 
   useEffect(() => {
@@ -33,27 +36,33 @@ export default function Layout() {
 
   return (
     <div style={{ display:'flex', height:'100vh', overflow:'hidden' }}>
-      <Sidebar />
+      {/* Sidebar only on desktop */}
+      {!isMobile && <Sidebar />}
+
       <div style={{ flex:1, display:'flex', flexDirection:'column', minWidth:0, overflow:'hidden' }}>
-        <Topbar />
+        <Topbar isMobile={isMobile} />
 
         {/* Offline banner */}
         {!isOnline && (
-          <div style={{ background:'rgba(255,170,68,.15)', borderBottom:'1px solid rgba(255,170,68,.3)', padding:'8px 24px', fontSize:13, color:'var(--amber)', display:'flex', alignItems:'center', gap:8 }}>
-            📡 You are offline — some features may not work. Data will sync when reconnected.
+          <div style={{ background:'rgba(255,170,68,.15)', borderBottom:'1px solid rgba(255,170,68,.3)', padding:'8px 16px', fontSize:13, color:'var(--amber)', display:'flex', alignItems:'center', gap:8 }}>
+            📡 You are offline — some features may not work.
           </div>
         )}
 
         {/* PWA install banner */}
         {canInstall && (
-          <div style={{ background:'linear-gradient(135deg,rgba(0,212,168,.1),rgba(74,159,213,.1))', borderBottom:'1px solid var(--mintd)', padding:'8px 24px', fontSize:13, display:'flex', alignItems:'center', gap:12 }}>
-            <span>📱 Install MediAssist Pro as an app on your device!</span>
-            <button onClick={install} style={{ background:'var(--mint)', color:'#080E1C', border:'none', borderRadius:8, padding:'5px 14px', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--sans)' }}>Install App</button>
-            <span style={{ marginLeft:'auto', cursor:'pointer', color:'var(--text3)', fontSize:18 }}>✕</span>
+          <div style={{ background:'linear-gradient(135deg,rgba(0,212,168,.1),rgba(74,159,213,.1))', borderBottom:'1px solid var(--mintd)', padding:'8px 16px', fontSize:13, display:'flex', alignItems:'center', gap:12 }}>
+            <span>📱 Install MediAssist Pro!</span>
+            <button onClick={install} style={{ background:'var(--mint)', color:'#080E1C', border:'none', borderRadius:8, padding:'5px 14px', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--sans)' }}>Install</button>
           </div>
         )}
 
-        <div style={{ flex:1, overflowY:'auto', padding:'24px' }}>
+        {/* Main scrollable content */}
+        <div style={{
+          flex: 1, overflowY: 'auto',
+          padding: isMobile ? '16px 14px' : '24px',
+          paddingBottom: isMobile ? 'calc(80px + env(safe-area-inset-bottom))' : '24px',
+        }}>
           <Routes>
             <Route path="/"              element={<Dashboard />} />
             <Route path="/symptoms"      element={<SymptomChecker />} />
@@ -72,6 +81,9 @@ export default function Layout() {
           </Routes>
         </div>
       </div>
+
+      {/* Mobile bottom nav */}
+      {isMobile && <MobileNav />}
     </div>
   );
 }
