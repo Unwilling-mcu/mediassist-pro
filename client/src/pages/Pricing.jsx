@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = BASE.endsWith('/api') ? BASE : `${BASE}/api`;
 
 const PLAN_META = {
   starter:    { icon: '⚡', color: 'var(--blue)',   border: 'rgba(74,159,213,0.3)',   btnBg: 'var(--blue)',   popular: false },
