@@ -17,6 +17,7 @@ const NAV = [
   { path:'/wearables',     label:'Wearables',      icon:'⌚', badge:'Live', bc:'var(--mint)'  },
   { path:'/org-admin',     label:'Organisation',   icon:'🏥', badge:'New',  bc:'var(--purple)' },
   { path:'/pricing',       label:'Upgrade Plan',   icon:'⚡', badge:'Pro',  bc:'var(--amber)' },
+  { path:'/legal',         label:'Legal & Privacy',icon:'📋' },
   { path:'/settings',      label:'Settings',       icon:'⚙️' },
 ];
 
@@ -31,14 +32,10 @@ export default function Sidebar() {
 
   return (
     <div style={{ width:w, minHeight:'100vh', background:'var(--bg2)', borderRight:'1px solid var(--border)', display:'flex', flexDirection:'column', padding:sidebarOpen?'16px 12px':'16px 0', gap:3, transition:'width .28s cubic-bezier(.4,0,.2,1)', flexShrink:0, zIndex:200, overflow:'hidden' }}>
-
-      {/* Logo */}
       <div onClick={toggleSidebar} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 4px 16px', cursor:'pointer', flexShrink:0 }}>
         <div style={{ width:38, height:38, background:'linear-gradient(135deg,var(--mint),var(--blue))', borderRadius:11, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, fontSize:18, color:'#fff', fontWeight:700 }}>✚</div>
         {sidebarOpen && <span style={{ fontFamily:'var(--serif)', fontSize:16, color:'var(--text)', whiteSpace:'nowrap' }}>MediAssist Pro</span>}
       </div>
-
-      {/* Scrollable nav */}
       <div style={{ flex:1, overflowY:'auto', overflowX:'hidden', display:'flex', flexDirection:'column', gap:2 }}>
         {NAV.map(item => {
           const active = pathname===item.path||(item.path!=='/'&&pathname.startsWith(item.path));
@@ -58,8 +55,6 @@ export default function Sidebar() {
           );
         })}
       </div>
-
-      {/* Bottom */}
       <div style={{ flexShrink:0 }}>
         <div onClick={nextTheme} style={{ display:'flex', alignItems:'center', gap:10, padding:sidebarOpen?'9px 12px':'9px', borderRadius:'var(--rs)', cursor:'pointer', color:'var(--text2)', justifyContent:sidebarOpen?'flex-start':'center', transition:'all .18s', marginBottom:2 }}
           onMouseEnter={e=>{e.currentTarget.style.background='var(--bg3)';e.currentTarget.style.color='var(--text)';}}
