@@ -2,10 +2,17 @@ const Razorpay  = require('razorpay');
 const crypto    = require('crypto');
 const Organisation = require('../models/Organisation');
 
-const razorpay = new Razorpay({
-  key_id:     process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+// Lazy init — only creates instance when needed, not at startup
+let _razorpay = null;
+const getRazorpay = () => {
+  if (!_razorpay) {
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      throw new Error('RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET must be set in environment variables');
+    }
+    _razorpay = new Razorpay({ key_id: process.env.RAZORPAY_KEY_ID, key_secret: process.env.RAZORPAY_KEY_SECRET });
+  }
+  return _razorpay;
+};
 
 // ─── Plan config (fill RAZORPAY_PLAN_* in .env once you create plans) ─────────
 const PLANS = {
@@ -70,7 +77,7 @@ exports.createSubscription = async (req, res) => {
     // Create Razorpay customer if not exists
     let customerId = org.razorpay.customerId;
     if (!customerId) {
-      const customer = await razorpay.customers.create({
+      const customer = await getRazorpay().customers.create({
         name:    req.user.name,
         email:   req.user.email,
         contact: org.phone || '',
@@ -81,7 +88,7 @@ exports.createSubscription = async (req, res) => {
     }
 
     // Create subscription
-    const subscription = await razorpay.subscriptions.create({
+    const subscription = await getRazorpay().subscriptions.create({
       plan_id:         plan.id,
       customer_notify: 1,
       quantity:        1,
@@ -241,7 +248,7 @@ exports.cancelSubscription = async (req, res) => {
       return res.status(400).json({ success: false, message: 'No active subscription found' });
     }
 
-    await razorpay.subscriptions.cancel(org.razorpay.subscriptionId, true); // cancel at end of period
+    await getRazorpay().subscriptions.cancel(org.razorpay.subscriptionId, true); // cancel at end of period
 
     org.plan.status = 'cancelled';
     await org.save();
