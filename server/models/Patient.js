@@ -9,6 +9,11 @@ const emergencyContactSchema = new mongoose.Schema({
 const patientSchema = new mongoose.Schema({
   user:        { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
   patientId:   { type: String, unique: true },
+
+  // ─── Multi-tenancy ────────────────────────────────────────────────────────
+  // null = individual patient (no org); ObjectId = belongs to this organisation
+  organisation: { type: mongoose.Schema.Types.ObjectId, ref: 'Organisation', default: null },
+
   dateOfBirth: { type: Date },
   gender:      { type: String, enum: ['Male', 'Female', 'Other'] },
   bloodGroup:  { type: String, enum: ['A+','A-','B+','B-','AB+','AB-','O+','O-'] },
@@ -17,12 +22,10 @@ const patientSchema = new mongoose.Schema({
   city:        { type: String },
   state:       { type: String },
 
-  // Physical stats
   heightCm:    { type: Number },
   weightKg:    { type: Number },
   waistCm:     { type: Number },
 
-  // Medical history
   allergies:         [{ type: String }],
   chronicConditions: [{ type: String }],
   pastSurgeries:     [{ type: String }],
@@ -30,19 +33,17 @@ const patientSchema = new mongoose.Schema({
   smokingStatus:     { type: String, enum: ['Non-Smoker', 'Smoker', 'Former Smoker'], default: 'Non-Smoker' },
   alcoholUse:        { type: String, enum: ['None', 'Occasional', 'Regular'], default: 'None' },
 
-  // Emergency contacts
   emergencyContacts: [emergencyContactSchema],
 
-  // Location (for nearby search)
   location: {
     type:        { type: String, enum: ['Point'], default: 'Point' },
-    coordinates: { type: [Number], default: [86.97, 23.68] }, // [lng, lat]
+    coordinates: { type: [Number], default: [86.97, 23.68] },
   },
 }, { timestamps: true });
 
 patientSchema.index({ location: '2dsphere' });
+patientSchema.index({ organisation: 1 }); // fast lookup by org
 
-// Auto-generate patientId
 patientSchema.pre('save', async function (next) {
   if (!this.patientId) {
     const count = await mongoose.model('Patient').countDocuments();
@@ -51,14 +52,12 @@ patientSchema.pre('save', async function (next) {
   next();
 });
 
-// Virtual: BMI
 patientSchema.virtual('bmi').get(function () {
   if (!this.heightCm || !this.weightKg) return null;
   const h = this.heightCm / 100;
   return Math.round((this.weightKg / (h * h)) * 10) / 10;
 });
 
-// Virtual: age
 patientSchema.virtual('age').get(function () {
   if (!this.dateOfBirth) return null;
   const today = new Date();

@@ -5,7 +5,20 @@ const userSchema = new mongoose.Schema({
   name:     { type: String, required: true, trim: true },
   email:    { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true, minlength: 6 },
-  role:     { type: String, enum: ['patient', 'doctor', 'admin'], default: 'patient' },
+
+  // Extended roles — 'org_admin' manages an organisation
+  role: {
+    type: String,
+    enum: ['patient', 'doctor', 'admin', 'org_admin'],
+    default: 'patient',
+  },
+
+  // Which org this user belongs to (null = individual/no org)
+  organisation: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organisation',
+    default: null,
+  },
 }, { timestamps: true });
 
 // Hash password before save

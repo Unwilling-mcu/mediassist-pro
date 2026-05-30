@@ -21,6 +21,8 @@ import Reminders from '../Reminders/Reminders';
 import BookingPage from '../Booking/BookingPage';
 import Appointments from '../Appointments/Appointments';
 import Settings from '../Settings/Settings';
+import Pricing from '../../pages/Pricing';
+import OrgAdmin from '../OrgAdmin/OrgAdmin';
 
 export default function Layout() {
   const setPatient = useStore((s) => s.setPatient);
@@ -36,33 +38,21 @@ export default function Layout() {
 
   return (
     <div style={{ display:'flex', height:'100vh', overflow:'hidden' }}>
-      {/* Sidebar only on desktop */}
       {!isMobile && <Sidebar />}
-
       <div style={{ flex:1, display:'flex', flexDirection:'column', minWidth:0, overflow:'hidden' }}>
         <Topbar isMobile={isMobile} />
-
-        {/* Offline banner */}
         {!isOnline && (
           <div style={{ background:'rgba(255,170,68,.15)', borderBottom:'1px solid rgba(255,170,68,.3)', padding:'8px 16px', fontSize:13, color:'var(--amber)', display:'flex', alignItems:'center', gap:8 }}>
             📡 You are offline — some features may not work.
           </div>
         )}
-
-        {/* PWA install banner */}
         {canInstall && (
           <div style={{ background:'linear-gradient(135deg,rgba(0,212,168,.1),rgba(74,159,213,.1))', borderBottom:'1px solid var(--mintd)', padding:'8px 16px', fontSize:13, display:'flex', alignItems:'center', gap:12 }}>
             <span>📱 Install MediAssist Pro!</span>
             <button onClick={install} style={{ background:'var(--mint)', color:'#080E1C', border:'none', borderRadius:8, padding:'5px 14px', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--sans)' }}>Install</button>
           </div>
         )}
-
-        {/* Main scrollable content */}
-        <div style={{
-          flex: 1, overflowY: 'auto',
-          padding: isMobile ? '16px 14px' : '24px',
-          paddingBottom: isMobile ? 'calc(80px + env(safe-area-inset-bottom))' : '24px',
-        }}>
+        <div style={{ flex:1, overflowY:'auto', padding: isMobile ? '16px 14px' : '24px', paddingBottom: isMobile ? 'calc(80px + env(safe-area-inset-bottom))' : '24px' }}>
           <Routes>
             <Route path="/"              element={<Dashboard />} />
             <Route path="/symptoms"      element={<SymptomChecker />} />
@@ -77,12 +67,12 @@ export default function Layout() {
             <Route path="/prescriptions" element={<Prescriptions />} />
             <Route path="/wearables"     element={<Wearables />} />
             <Route path="/settings"      element={<Settings />} />
-            <Route path="*"              element={<Dashboard />} />
+            <Route path="/pricing"       element={<Pricing />} />
+            <Route path="/org-admin"     element={<OrgAdmin />} />
+            <Route path="*"             element={<Dashboard />} />
           </Routes>
         </div>
       </div>
-
-      {/* Mobile bottom nav */}
       {isMobile && <MobileNav />}
     </div>
   );

@@ -15,6 +15,8 @@ const NAV = [
   { path:'/profile',       label:'My Profile',     icon:'👤' },
   { path:'/prescriptions', label:'Prescriptions',  icon:'💊' },
   { path:'/wearables',     label:'Wearables',      icon:'⌚', badge:'Live', bc:'var(--mint)'  },
+  { path:'/org-admin',     label:'Organisation',   icon:'🏥', badge:'New',  bc:'var(--purple)' },
+  { path:'/pricing',       label:'Upgrade Plan',   icon:'⚡', badge:'Pro',  bc:'var(--amber)' },
   { path:'/settings',      label:'Settings',       icon:'⚙️' },
 ];
 
@@ -49,7 +51,7 @@ export default function Sidebar() {
               {sidebarOpen && (
                 <>
                   <span style={{ fontSize:13, fontWeight:500, flex:1, whiteSpace:'nowrap' }}>{item.label}</span>
-                  {item.badge && <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:100, background:item.bc, color:item.bc==='var(--mint)'?'#080E1C':'#fff', flexShrink:0 }}>{item.badge}</span>}
+                  {item.badge && <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:100, background:item.bc, color:item.bc==='var(--mint)'||item.bc==='var(--amber)'?'#080E1C':'#fff', flexShrink:0 }}>{item.badge}</span>}
                 </>
               )}
             </div>

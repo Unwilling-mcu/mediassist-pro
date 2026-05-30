@@ -1,5 +1,6 @@
-const express = require('express');
-const router  = express.Router();
+const express    = require('express');
+const router     = express.Router();
+const rateLimit  = require('express-rate-limit');
 const { protect } = require('../middleware/auth');
 const Patient      = require('../models/Patient');
 const Prescription = require('../models/Prescription');
@@ -8,8 +9,24 @@ const Groq         = require('groq-sdk');
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+// ─── Rate limit: 20 AI requests per user per 10 minutes ──────────────────────
+const aiLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 20,
+  // Use user ID when available — avoids IPv6 issues entirely
+  // Falls back to nothing (express-rate-limit handles IP internally)
+  keyGenerator: (req) => req.user?._id?.toString() ?? req.socket.remoteAddress,
+  validate: { xForwardedForHeader: false },
+  handler: (req, res) => {
+    res.status(429).json({
+      success: false,
+      message: 'Too many AI requests. Please wait a few minutes before trying again.',
+    });
+  },
+});
+
 // POST /api/ai/chat
-router.post('/chat', protect, async (req, res) => {
+router.post('/chat', protect, aiLimiter, async (req, res) => {
   try {
     const { messages } = req.body;
     if (!messages?.length)
@@ -42,7 +59,7 @@ Guidelines:
 - If symptoms sound serious, clearly say to seek immediate care.`;
 
     const response = await groq.chat.completions.create({
-      model: 'llama-3.1-8b-instant',   // ✅ Current active Groq model
+      model: 'llama-3.1-8b-instant',
       max_tokens: 1000,
       messages: [
         { role: 'system', content: systemPrompt },

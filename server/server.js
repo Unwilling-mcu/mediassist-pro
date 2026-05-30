@@ -7,6 +7,17 @@ const { Server } = require('socket.io');
 const connectDB  = require('./config/db');
 
 dotenv.config();
+
+// ─── Safety checks before anything else ──────────────────────────────────────
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET is not set in environment variables. Exiting.');
+  process.exit(1);
+}
+if (!process.env.MONGODB_URI && !process.env.MONGO_URI) {
+  console.error('FATAL: MONGODB_URI is not set. Exiting.');
+  process.exit(1);
+}
+
 connectDB();
 
 const app    = express();
@@ -21,9 +32,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
-    // Allow any vercel.app subdomain
     if (origin.endsWith('.vercel.app') || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -43,23 +52,26 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use('/api/auth',         require('./routes/auth'));
-app.use('/api/patients',     require('./routes/patients'));
-app.use('/api/symptoms',     require('./routes/symptoms'));
-app.use('/api/prescriptions',require('./routes/prescriptions'));
-app.use('/api/vitals',       require('./routes/vitals'));
-app.use('/api/ai',           require('./routes/ai'));
-app.use('/api/hospitals',    require('./routes/hospitals'));
-app.use('/api/appointments', require('./routes/appointments'));
-app.use('/api/messages',     require('./routes/messages'));
+// ─── Routes ───────────────────────────────────────────────────────────────────
+app.use('/api/auth',          require('./routes/auth'));
+app.use('/api/patients',      require('./routes/patients'));
+app.use('/api/symptoms',      require('./routes/symptoms'));
+app.use('/api/prescriptions', require('./routes/prescriptions'));
+app.use('/api/vitals',        require('./routes/vitals'));
+app.use('/api/ai',            require('./routes/ai'));
+app.use('/api/hospitals',     require('./routes/hospitals'));
+app.use('/api/appointments',  require('./routes/appointments'));
+app.use('/api/messages',      require('./routes/messages'));
+app.use('/api/organisations',  require('./routes/organisations'));
+app.use('/api/billing',        require('./routes/billing'));
 
 app.get('/api/health', (req, res) => {
-  res.json({ status:'ok', message:'MediAssist API running', timestamp: new Date() });
+  res.json({ status: 'ok', message: 'MediAssist API running', timestamp: new Date() });
 });
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(err.status || 500).json({ success:false, message: err.message || 'Server error' });
+  res.status(err.status || 500).json({ success: false, message: err.message || 'Server error' });
 });
 
 const PORT = process.env.PORT || 5000;
