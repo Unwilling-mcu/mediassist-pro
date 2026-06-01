@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const Organisation = require('../models/Organisation');
 const User = require('../models/User');
 const Patient = require('../models/Patient');
@@ -23,7 +24,9 @@ exports.createOrganisation = async (req, res) => {
       organisation: org._id,
     });
 
-    res.status(201).json({ success: true, data: org });
+    // Return fresh token so frontend picks up new org association
+    const freshToken = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    res.status(201).json({ success: true, data: org, token: freshToken });
   } catch (err) {
     if (err.code === 11000) {
       return res.status(400).json({ success: false, message: 'An organisation with that name already exists' });

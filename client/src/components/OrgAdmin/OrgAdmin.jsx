@@ -154,7 +154,12 @@ export default function OrgAdmin() {
     setCreating(true);
     const res = await apiFetch('/organisations', { method: 'POST', body: { name: orgName, type: orgType, email: orgEmail } });
     setCreating(false);
-    if (res.success) { setNoOrg(false); loadAll(); }
+    if (res.success) {
+      // Save fresh token so subsequent API calls include org context
+      if (res.token) localStorage.setItem('token', res.token);
+      setNoOrg(false);
+      loadAll();
+    }
     else setError(res.message);
   };
 

@@ -3,21 +3,21 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import useStore from '../../store/useStore';
 
 const NAV = [
-  { path:'/',              label:'Dashboard',      icon:'⊞' },
-  { path:'/symptoms',      label:'Symptom Check',  icon:'🩺', badge:'AI',   bc:'var(--coral)' },
+  { path:'/',              label:'Dashboard',      icon:'🏠' },
+  { path:'/symptoms',      label:'Symptom Check',  icon:'🔍', badge:'AI',   bc:'var(--coral)' },
   { path:'/nearby',        label:'Nearby Care',    icon:'📍' },
-  { path:'/book',          label:'Book Doctor',    icon:'📅' },
-  { path:'/appointments',  label:'Appointments',   icon:'🗓️' },
+  { path:'/book',          label:'Book Doctor',    icon:'📆' },
+  { path:'/appointments',  label:'Appointments',   icon:'✅' },
   { path:'/doctor-chat',   label:'Doctor Chat',    icon:'💬', badge:'Live', bc:'var(--green)' },
   { path:'/chat',          label:'AI Assistant',   icon:'🤖' },
-  { path:'/analytics',     label:'Analytics',      icon:'📊' },
+  { path:'/analytics',     label:'Analytics',      icon:'📈' },
   { path:'/reminders',     label:'Reminders',      icon:'🔔' },
   { path:'/profile',       label:'My Profile',     icon:'👤' },
   { path:'/prescriptions', label:'Prescriptions',  icon:'💊' },
   { path:'/wearables',     label:'Wearables',      icon:'⌚', badge:'Live', bc:'var(--mint)'  },
   { path:'/org-admin',     label:'Organisation',   icon:'🏥', badge:'New',  bc:'var(--purple)' },
   { path:'/pricing',       label:'Upgrade Plan',   icon:'⚡', badge:'Pro',  bc:'var(--amber)' },
-  { path:'/legal',         label:'Legal & Privacy',icon:'📋' },
+  { path:'/legal',         label:'Legal & Privacy',icon:'🔒' },
   { path:'/doctor-register', label:'Join as Doctor', icon:'🩺', badge:'New', bc:'var(--blue)' },
   { path:'/settings',      label:'Settings',       icon:'⚙️' },
 ];
