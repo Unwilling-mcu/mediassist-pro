@@ -35,21 +35,28 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).populate('organisation', '_id name plan');
     if (!user || !(await user.matchPassword(password)))
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
 
     res.json({
       success: true,
       token: generateToken(user._id),
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id:           user._id,
+        name:         user.name,
+        email:        user.email,
+        role:         user.role,
+        organisation: user.organisation,
+      },
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// GET /api/auth/me
+// GET /api/auth/me  — also returns a fresh token with latest user state
 exports.getMe = async (req, res) => {
-  res.json({ success: true, user: req.user });
+  const freshToken = generateToken(req.user._id);
+  res.json({ success: true, user: req.user, token: freshToken });
 };

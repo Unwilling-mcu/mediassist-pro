@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import useStore from './store/useStore';
 import { initTheme } from './store/theme';
@@ -6,6 +6,9 @@ import Layout from './components/Layout/Layout';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import './styles/globals.css';
+
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API  = BASE.endsWith('/api') ? BASE : `${BASE}/api`;
 
 // Init theme before first render
 initTheme();
@@ -21,6 +24,22 @@ function PublicRoute({ children }) {
 }
 
 export default function App() {
+  const { token, setAuth, user } = useStore();
+
+  // On app load, refresh token so org/role changes are picked up
+  useEffect(() => {
+    if (!token) return;
+    fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => {
+        if (d.success && d.token) {
+          localStorage.setItem('token', d.token);
+          setAuth(d.user, d.token);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
