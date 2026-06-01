@@ -24,6 +24,7 @@ import Settings from '../Settings/Settings';
 import Pricing from '../../pages/Pricing';
 import OrgAdmin from '../OrgAdmin/OrgAdmin';
 import Legal from '../../pages/Legal';
+import DoctorOnboarding from '../../pages/DoctorOnboarding';
 
 export default function Layout() {
   const setPatient = useStore((s) => s.setPatient);
@@ -71,6 +72,7 @@ export default function Layout() {
             <Route path="/pricing"       element={<Pricing />} />
             <Route path="/org-admin"     element={<OrgAdmin />} />
             <Route path="/legal"         element={<Legal />} />
+            <Route path="/doctor-register" element={<DoctorOnboarding />} />
             <Route path="*"              element={<Dashboard />} />
           </Routes>
         </div>

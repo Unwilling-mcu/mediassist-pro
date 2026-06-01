@@ -64,6 +64,7 @@ app.use('/api/appointments',  require('./routes/appointments'));
 app.use('/api/messages',      require('./routes/messages'));
 app.use('/api/organisations',  require('./routes/organisations'));
 app.use('/api/billing',        require('./routes/billing'));
+app.use('/api/doctors',        require('./routes/doctors'));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'MediAssist API running', timestamp: new Date() });

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import DoctorApprovalPanel from './DoctorApprovalPanel';
 
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const API = BASE.endsWith('/api') ? BASE : `${BASE}/api`;
@@ -336,6 +337,9 @@ export default function OrgAdmin() {
           )}
         </div>
       </div>
+
+      {/* ── Doctor approvals ── */}
+      <DoctorApprovalPanel />
 
       {/* ── Quick actions ── */}
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 10 }}>

@@ -18,6 +18,7 @@ const NAV = [
   { path:'/org-admin',     label:'Organisation',   icon:'🏥', badge:'New',  bc:'var(--purple)' },
   { path:'/pricing',       label:'Upgrade Plan',   icon:'⚡', badge:'Pro',  bc:'var(--amber)' },
   { path:'/legal',         label:'Legal & Privacy',icon:'📋' },
+  { path:'/doctor-register', label:'Join as Doctor', icon:'🩺', badge:'New', bc:'var(--blue)' },
   { path:'/settings',      label:'Settings',       icon:'⚙️' },
 ];
 
